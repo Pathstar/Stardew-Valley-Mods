@@ -1,11 +1,10 @@
 {
-  "Name": "ChatTime",
+  "Name": "Chat Time",
   "Author": "Pathstar",
   "Version": "1.0.0",
-  "Description": "Display the time of the chat message",
+  "Description": "Adds time before each chat message. (format customizable, e.g. [MM‑dd-yyyy HH:mm:ss.fffffff] )",
   "UniqueID": "Pathstar.ChatTime",
   "EntryDll": "ChatTime.dll",
   "MinimumApiVersion": "2.11",
-  "UpdateKeys": [ "Nexus:" ]
-
+  "UpdateKeys": [ "Nexus:49183" ]
 }
