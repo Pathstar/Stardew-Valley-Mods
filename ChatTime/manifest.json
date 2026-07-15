@@ -1,0 +1,11 @@
+{
+  "Name": "ChatTime",
+  "Author": "Pathstar",
+  "Version": "1.0.0",
+  "Description": "Display the time of the chat message",
+  "UniqueID": "Pathstar.ChatTime",
+  "EntryDll": "ChatTime.dll",
+  "MinimumApiVersion": "2.11",
+  "UpdateKeys": [ "Nexus:" ]
+
+}
