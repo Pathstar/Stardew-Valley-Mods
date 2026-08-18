@@ -1,0 +1,9 @@
+{
+  "Name": "Farm Panorama Trigger",
+  "Author": "Pathstar",
+  "Version": "1.0.0",
+  "Description": "自动拍摄",
+  "UniqueID": "Pathstar.AutoFarmScreenshot",
+  "EntryDll": "FarmPanorama.dll",
+  "MinimumApiVersion": "4.0.0"
+}

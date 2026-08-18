@@ -10,7 +10,7 @@
 [Rr]elease/
 [Bb]in/
 [Oo]bj/
-
+legacy/
 # Visual Studio cache/options
 .vs/
 
@@ -26,3 +26,5 @@ _ReSharper*/
 *.nuget.targets
 
 _releases
+
+start.md
