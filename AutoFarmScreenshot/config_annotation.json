@@ -2,11 +2,18 @@
   // General rule for all settings:
   // An empty string or 0 means "unlimited" / "no restriction".
 
+  // Master control switch
+  "enabled": true,
+
   // Cooldown between actual photos, in seconds.
   // This is shared by all trigger types and locations.
   "photoCooldown": 30,
 
+  // If you don't know the name of a place, you can turn on this switch and enter the game to see
+  "printLocationNameWhenEntering": false,
+  
   // Triggered when the player enters one of the specified locations from another location.
+  // Default Settings: Take photos when you first enter the farm each game day
   "locationEntryTrigger": {
     "enabled": true,
 
@@ -15,7 +22,7 @@
     "locations": "Farm, IslandWest",
 
     // Cooldown between triggers, in seconds.
-    "triggerCooldown": 0,
+    "triggerCooldown": 60,
 
     // Allowed time ranges, e.g. "06:00-22:00".
     // Separate multiple time ranges with commas.
@@ -30,6 +37,7 @@
   },
 
   // Triggered when a change occurs in a terrain feature list.
+  // Default Settings: Take a photo when the region has changed more than 16 times
   "changeTrigger": {
     "enabled": true,
 
@@ -38,7 +46,7 @@
     "locations": "Farm, IslandWest",
 
     // Cooldown between triggers, in seconds.
-    "triggerCooldown": 120,
+    "triggerCooldown": 1,
 
     // Allowed time ranges, e.g. "06:00-22:00".
     // Separate multiple time ranges with commas.
@@ -52,36 +60,3 @@
     "dailyPhotoLimit": 0
   }
 }
-
-
-// // 所有设置的规则: 空字符串、0->不限制
-// {
-  
-//   // 当玩家从其他地方进入到设定的地方触发
-//   "到达地方触发": {
-//     "enabled": true,
-//     // 多个地点以, 分割
-//     // 每个地点的限制分别计算
-//     "locations": "Farm, IslandWest",
-//     // 间隔单位: 秒
-//     "触发冷却时间": 0,
-//     // 例如: 06:00-22:00
-//     // 多个时间以, 分割
-//     "允许的时间段": "",
-//     "累计触发几次后进行拍照": 1,
-//     "游戏日每天拍照数量限制": 1
-//   },
-//   "变化触发": {
-//     "enabled": true,
-//     // 多个地点以, 分割
-//     // 每个地点的限制分别计算
-//     "locations": "Farm, IslandWest",
-//     // 间隔单位: 秒
-//     "触发冷却时间": 120,
-//     // 例如: 06:00-22:00
-//     // 多个时间以, 分割
-//     "允许的时间段": "",
-//     "累计触发几次后进行拍照": 16,
-//     "游戏日每天拍照数量限制": 0
-//   }
-// }
