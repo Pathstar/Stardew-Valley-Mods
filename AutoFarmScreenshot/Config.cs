@@ -11,14 +11,20 @@ public class Config
     // =========================
     public bool enabled { get; set; }
     public float photoCooldown { get; set; }
+    public string screenshotNameTemplate { get; set; }
+    public bool useUtcTime { get; set; }
     public bool printLocationNameWhenEntering { get; set; }
     public TriggerConfig locationEntryTrigger { get; set; }
     public TriggerConfig changeTrigger { get; set; }
-
+    internal Dictionary<string, Dictionary<string, int>> savedTriggerCounts { get; private set; }
+        = new(StringComparer.Ordinal);
+    internal string compiledTemplate { get; private set; } = "";
     public Config()
     {
         enabled = true;
         photoCooldown = 30.0f;
+        screenshotNameTemplate = "{gameSaveName}_{year}-{month}-{day}-{hour}-{minute}-{second}-{millisecond}_{gameYear}-{gameSeason}-{gameDay}-{gameTime}_{location}_{triggerBy}";
+        useUtcTime = false;
         printLocationNameWhenEntering = false;
         locationEntryTrigger = new TriggerConfig{
             enabled = true,
@@ -43,10 +49,19 @@ public class Config
 
     internal void Compile()
     {
+        // try {
+        //     savedTriggerCounts = ModEntry.Instance.Helper.Data.ReadJsonFile<Dictionary<string, Dictionary<string, int>>>(
+        //         "data/triggerCounts.json"
+        //     ) ?? new Dictionary<string, Dictionary<string, int>>(StringComparer.Ordinal);
+        // } catch {
+        //     savedTriggerCounts = new Dictionary<string, Dictionary<string, int>>(StringComparer.Ordinal);
+        // }
         photoCooldown = Math.Max(0, photoCooldown);
 
         locationEntryTrigger.Compile();
         changeTrigger.Compile();
+
+        compiledTemplate = ScreenshotNameFormatter.CompileTemplate(screenshotNameTemplate);
     }
 }
 

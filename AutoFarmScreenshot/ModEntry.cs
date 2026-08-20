@@ -141,7 +141,6 @@ public class ModEntry : Mod {
     private void OnDayStarted(object sender, DayStartedEventArgs e) {
         // Monitor.Log($"[DayStarted]", LogLevel.Debug);
         autoPhotoManager.ResetDailyState();
-        // TakeFarmPanorama();
     }
 
 }

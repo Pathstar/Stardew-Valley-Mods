@@ -9,6 +9,14 @@
   // This is shared by all trigger types and locations.
   "photoCooldown": 30,
 
+  // Template for screenshot file names. 
+  // Supports parameters: gameSaveName: "MySave", playerName: "Abigail", year: 2026, month: 3, day: 14, hour: 16, minute: 22, second: 58, millisecond: 742, totalMilliseconds: 5822742, gameYear: 2, gameSeason: "summer", gameDay: 18, gameTime: 1230, location: "Farm", triggerBy: "LocationEntry or Changed"
+  // Default Example: MySave_2026-08-20-16-22-58-742_2-summer-18-1230_Farm_LocationEntry
+  "screenshotNameTemplate": "{gameSaveName}_{year}-{month}-{day}-{hour}-{minute}-{second}-{millisecond}_{gameYear}-{gameSeason}-{gameDay}-{gameTime}_{location}_{triggerBy}",
+
+  // Use UTC time for the timestamp in the screenshot name. If false, local time will be used.
+  "useUtcTime": false,
+
   // If you don't know the name of a place, you can turn on this switch and enter the game to see
   "printLocationNameWhenEntering": false,
   

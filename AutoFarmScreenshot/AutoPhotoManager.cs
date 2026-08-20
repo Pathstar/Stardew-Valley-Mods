@@ -33,6 +33,8 @@ public class AutoPhotoManager
         locationEntryRule = new TriggerRule(config.locationEntryTrigger);
         changeRule = new TriggerRule(config.changeTrigger);
         currentDayKey = GetDayKey();
+        // helper.Events.GameLoop.Exiting += OnGameExiting;
+        // GameRunner.instance.Exiting += SaveTriggerCounts;    
     }
 
     // ============================================================
@@ -90,7 +92,7 @@ public class AutoPhotoManager
         // event maybe √
         // ResetDailyStateIfNeeded();
 
-        TriggerState state = GetState(changeStates, location, "Change");
+        TriggerState state = GetState(changeStates, location, "Changed");
         TryHandleTrigger(
             new TriggerContext(
                 changeRule, 
@@ -186,57 +188,21 @@ public class AutoPhotoManager
         return true;
     }
 
-    // private bool TryCompletePendingPhoto(string location)
-    // {
-    //     // if (string.IsNullOrEmpty(location))
-    //     //     return false;
-
-    //     if (!IsPhotoCooldownFinished())
-    //         return false;
-
-    //     // 每种触发器分别检查。
-    //     if (TryCompletePendingPhoto(locationEntryStates, location))
-    //         return true;
-
-    //     return TryCompletePendingPhoto(changeStates, location);
-    // }
-
-    // private bool TryCompletePendingPhoto(
-    //     Dictionary<string, TriggerState> states,
-    //     string location)
-    // {
-    //     if (!states.TryGetValue(location, out TriggerState? state))
-    //         return false;
-
-    //     if (!state.pendingPhoto)
-    //         return false;
-
-    //     // 重新确认玩家目前确实在目标地点。
-    //     if (Game1.currentLocation?.Name != location){
-    //         ModEntry.Instance.Monitor.Log($"The player is no longer in the location when he is about to take a picture", LogLevel.Debug);
-    //         return false;
-    //     }
-
-    //     // 真正进入拍照阶段。
-    //     state.pendingPhoto = false;
-    //     state.photosToday++;
-
-    //     lastPhotoTime = GameTimeNow;
-
-    //     RequestPhoto(state);
-
-    //     return true;
-    // }
 
     // ============================================================
     // 状态
     // ============================================================
 
-    private static TriggerState GetState(Dictionary<string, TriggerState> states, string location, string type="")
+    private TriggerState GetState(Dictionary<string, TriggerState> states, string location, string type="")
     {
-        if (!states.TryGetValue(location, out TriggerState state))
-        {
-            state = new TriggerState(location) { type = type };
+        if (!states.TryGetValue(location, out TriggerState state)){
+            int triggerCount = 0;
+            if (config.savedTriggerCounts.TryGetValue(type, out var locations))
+                locations.TryGetValue(location, out triggerCount);
+            state = new TriggerState(location) { 
+                type = type,
+                triggerCount = triggerCount
+            };
             states.Add(location, state);
         }
 
@@ -299,13 +265,50 @@ public class AutoPhotoManager
         state.photosToday++;
         state.triggerCount = 0;
         lastPhotoTime = GameTimeNow;
-        DateTime utcNow = DateTime.UtcNow;
+        DateTime now = config.useUtcTime ? DateTime.UtcNow : DateTime.Now;        
         string location = state.location;
         if (location.Length > 32)
             location = location[..32];
-        string screenshot_name = $"{GetSaveGameName()}_{utcNow.Month}-{utcNow.Day}-{utcNow.Year}" + 
-                $"_{Game1.year}-{Game1.season}-{Game1.dayOfMonth}-{Game1.timeOfDay}_{location}_{state.type}_{(int)utcNow.TimeOfDay.TotalMilliseconds}";
-        TakeFarmPanorama(screenshot_name);
+        
+        // [game] Map Screenshot: Error taking screenshot.
+        // IOException: 文件名、目录名或卷标语法不正确。 : 'C:\Users\73498\AppData\Roaming\StardewValley\Screenshots\一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六一二三四五六.png'
+        //     at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+        //     at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)
+        //     at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)
+        //     at StardewValley.Game1.takeMapScreenshot(GameLocation screenshotLocation, Single scale, String screenshot_name, Action onDone) in D:\GitlabRunner\builds\Gq5qA5P4\0\ConcernedApe\stardewvalley\Farmer\Farmer\Game1.Screenshot.cs:line 387
+
+        // string screenshot_name = $"{GetSaveGameName()}_{utcNow.Month}-{utcNow.Day}-{utcNow.Year}" + 
+        //         $"_{Game1.year}-{Game1.season}-{Game1.dayOfMonth}-{Game1.timeOfDay}_{location}_{state.type}_{(int)utcNow.TimeOfDay.TotalMilliseconds}";
+        // {gameSaveName}_{year}-{month}-{day}-{hour}-{minute}-{second}-{millisecond}_{gameYear}-{gameSeason}-{gameDay}-{gameTime}_{location}_{state}
+        string screenshotName = string.Format(
+            config.compiledTemplate,
+            GetSaveGameName(),
+            SaveGame.FilterFileName(Game1.player.Name),
+            now.Year,
+            now.Month,
+            now.Day,
+            now.Hour,
+            now.Minute,
+            now.Second,
+            now.Millisecond,
+            (int)now.TimeOfDay.TotalMilliseconds,
+            Game1.year,
+            Game1.season,
+            Game1.dayOfMonth,
+            Game1.timeOfDay,
+            location,
+            state.type
+        );
+        if (screenshotName.Length > 250) {
+            string originalName = screenshotName;
+            screenshotName = screenshotName[..250];
+            ModEntry.Instance.Monitor.Log(
+                $"[AutoFarmScreenshot] Name too long, truncated to avoid save failure. Original: {originalName}.png | Truncated: {screenshotName}.png",
+                LogLevel.Info
+            );
+        }
+
+        TakeFarmPanorama(screenshotName);
     }
 
     
@@ -331,7 +334,7 @@ public class AutoPhotoManager
     private string GetSaveGameName()
     {
         if (string.IsNullOrWhiteSpace(saveGameName)){
-            saveGameName = ToSafeFileNameStrict(Game1.GetSaveGameName());
+            saveGameName = SaveGame.FilterFileName(Game1.GetSaveGameName());
             if (saveGameName.Length > 32)
                 saveGameName = saveGameName[..32];
         }
@@ -368,6 +371,47 @@ public class AutoPhotoManager
 
         return result;
     }
+
+
+    // private static void OnGameExiting(object sender, EventArgs e)
+    // {
+    //     SaveTriggerCounts();
+    // }
+    // public void SaveTriggerCounts()
+    // {
+    //     Dictionary<string, Dictionary<string, int>> data =
+    //         new(StringComparer.Ordinal);
+
+    //     foreach (TriggerState state in locationEntryStates.Values) {
+    //         if (state.triggerCount <= 0)
+    //             continue;
+    //         if (!data.TryGetValue(state.type, out var locations)) {
+    //             locations = new Dictionary<string, int>(StringComparer.Ordinal);
+    //             data[state.type] = locations;
+    //         }
+
+    //         locations[state.location] = state.triggerCount;
+    //     }
+
+    //     foreach (TriggerState state in changeStates.Values){
+    //         if (state.triggerCount <= 0)
+    //             continue;
+    //         if (!data.TryGetValue(state.type, out var locations)) {
+    //             locations = new Dictionary<string, int>(StringComparer.Ordinal);
+    //             data[state.type] = locations;
+    //         }
+
+    //         locations[state.location] = state.triggerCount;
+    //     }
+
+    //     if (data.Count == 0)
+    //         return;
+
+    //     ModEntry.Instance.Helper.Data.WriteJsonFile(
+    //         "data/triggerCounts.json",
+    //         data
+    //     );
+    // }
 
 }
 
