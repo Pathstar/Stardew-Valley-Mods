@@ -29,7 +29,7 @@ public class Config
         locationEntryTrigger = new TriggerConfig{
             enabled = true,
             locations = "Farm, IslandWest",
-            triggerCooldown = 60f,
+            triggerCooldown = 60.0f,
             allowedTimeRanges = "",
             triggersBeforeTakingPhoto = 1,
             dailyPhotoLimit = 1
@@ -37,7 +37,7 @@ public class Config
         changeTrigger = new TriggerConfig{
             enabled = true,
             locations = "Farm, IslandWest",
-            triggerCooldown = 1f,
+            triggerCooldown = 1.0f,
             allowedTimeRanges = "",
             triggersBeforeTakingPhoto = 16,
             dailyPhotoLimit = 0

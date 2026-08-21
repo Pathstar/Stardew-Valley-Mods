@@ -72,8 +72,8 @@ public static class ScreenshotNameFormatter
 
             if (colonIndex >= 0)
             {
-                variableName = content.Substring(0, colonIndex);
-                format = content.Substring(colonIndex);
+                variableName = content[..colonIndex];
+                format = content[colonIndex..];
             }
             else
             {

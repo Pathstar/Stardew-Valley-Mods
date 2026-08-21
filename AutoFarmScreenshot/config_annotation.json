@@ -1,4 +1,6 @@
 {
+  // Warning: Resulting in a lag of about 0.5 seconds in the screenshot, It’s usually not obvious during a location warp.
+
   // General rule for all settings:
   // An empty string or 0 means "unlimited" / "no restriction".
 
@@ -10,8 +12,8 @@
   "photoCooldown": 30,
 
   // Template for screenshot file names. 
-  // Supports parameters: gameSaveName: "MySave", playerName: "Abigail", year: 2026, month: 3, day: 14, hour: 16, minute: 22, second: 58, millisecond: 742, totalMilliseconds: 5822742, gameYear: 2, gameSeason: "summer", gameDay: 18, gameTime: 1230, location: "Farm", triggerBy: "LocationEntry or Changed"
-  // Default Example: MySave_2026-08-20-16-22-58-742_2-summer-18-1230_Farm_LocationEntry
+  // Supports parameters: gameSaveName: "MyWorld", playerName: "Abigail", year: 2026, month: 3, day: 14, hour: 16, minute: 22, second: 58, millisecond: 742, totalMilliseconds: 5822742, gameYear: 2, gameSeason: "summer", gameDay: 18, gameTime: 1230, location: "Farm", triggerBy: "LocationEntry or Changed"
+  // Default Example: MyWorld_2026-08-20-16-22-58-742_2-summer-18-1230_Farm_LocationEntry
   "screenshotNameTemplate": "{gameSaveName}_{year}-{month}-{day}-{hour}-{minute}-{second}-{millisecond}_{gameYear}-{gameSeason}-{gameDay}-{gameTime}_{location}_{triggerBy}",
 
   // Use UTC time for the timestamp in the screenshot name. If false, local time will be used.
@@ -26,7 +28,7 @@
     "enabled": true,
 
     // Separate multiple locations with commas.
-    // Restrictions are calculated independently for each location.
+    // Notice: Restrictions are calculated independently for each location, based on the configuration options listed below.
     "locations": "Farm, IslandWest",
 
     // Cooldown between triggers, in seconds.
@@ -44,13 +46,14 @@
     "dailyPhotoLimit": 1
   },
 
-  // Triggered when a change occurs in a terrain feature list.
+  // Triggered when there is a change in the location, Such as object changes, terrain changes
   // Default Settings: Take a photo when the region has changed more than 16 times
+  // Warning: Resulting in a lag of about 0.5 seconds in the screenshot
   "changeTrigger": {
-    "enabled": true,
+    "enabled": false,
 
     // Separate multiple locations with commas.
-    // Restrictions are calculated independently for each location.
+    // Notice: Restrictions are calculated independently for each location, based on the configuration options listed below.
     "locations": "Farm, IslandWest",
 
     // Cooldown between triggers, in seconds.

@@ -32,7 +32,7 @@ public class AutoPhotoManager
         config.Compile();
         locationEntryRule = new TriggerRule(config.locationEntryTrigger);
         changeRule = new TriggerRule(config.changeTrigger);
-        currentDayKey = GetDayKey();
+        // currentDayKey = GetDayKey();
         // helper.Events.GameLoop.Exiting += OnGameExiting;
         // GameRunner.instance.Exiting += SaveTriggerCounts;    
     }
@@ -59,10 +59,12 @@ public class AutoPhotoManager
         // event maybe √
         // ResetDailyStateIfNeeded();
 
-        TriggerState state = GetState(locationEntryStates, location, "LocationEntry");
-        // 进入地点时，优先兑现这个地点的待拍照请求。
-        if (TryCompletePendingPhoto(state))
+        // 进入地点时，优先检查这个地点的可能导致待拍照的触发器请求。
+        TriggerState changedState = GetState(changeStates, location, "Changed");
+        if (TryCompletePendingPhoto(changedState))
             return;
+
+        TriggerState state = GetState(locationEntryStates, location, "LocationEntry");
         TryHandleTrigger(
             new TriggerContext(
                 locationEntryRule, 
@@ -91,7 +93,7 @@ public class AutoPhotoManager
 
         // event maybe √
         // ResetDailyStateIfNeeded();
-
+        // 是否已经是溢满状态
         TriggerState state = GetState(changeStates, location, "Changed");
         TryHandleTrigger(
             new TriggerContext(
@@ -128,17 +130,14 @@ public class AutoPhotoManager
         // int timeOfDay,
         // bool isCurrentLocation)
         // 已经进入“等待拍照”阶段：
-        // 在拍照完成之前，新的触发一律拒绝，不累计次数。
+        // 在拍照完成之前，新的触发一律拒绝，不累计次数。并检查是否能进行拍照
         TriggerState state = ctx.State;
-        if (state.pendingPhoto)
-            return;
-
-        TriggerRule rule = ctx.Rule;
-        // 是否已经是溢满状态
-        if (state.triggerCount >= rule.triggersBeforeTakingPhoto) {
+        if (state.pendingPhoto){
             TryCompletePendingPhoto(state);
             return;
         }
+
+        TriggerRule rule = ctx.Rule;
         // 4.是否应当触发
         double gameTimeNow = ctx.GameTimeNow;
         //独立计算每个触发器的每个地点 1. 每日拍照限制 / 2. 游戏时间 / 3. 触发冷却
@@ -196,12 +195,12 @@ public class AutoPhotoManager
     private TriggerState GetState(Dictionary<string, TriggerState> states, string location, string type="")
     {
         if (!states.TryGetValue(location, out TriggerState state)){
-            int triggerCount = 0;
-            if (config.savedTriggerCounts.TryGetValue(type, out var locations))
-                locations.TryGetValue(location, out triggerCount);
+            // int triggerCount = 0;
+            // if (config.savedTriggerCounts.TryGetValue(type, out var locations))
+            //     locations.TryGetValue(location, out triggerCount);
             state = new TriggerState(location) { 
                 type = type,
-                triggerCount = triggerCount
+                // triggerCount = triggerCount
             };
             states.Add(location, state);
         }
@@ -322,9 +321,8 @@ public class AutoPhotoManager
             screenshot_name2 = $"{saveGameName}_{utcNow.Month}-{utcNow.Day}-{utcNow.Year}" + 
                 $"_{Game1.year}-{Game1.season}-{Game1.dayOfMonth}-{Game1.timeOfDay}_{(int)utcNow.TimeOfDay.TotalMilliseconds}";
         }
-        Game1.game1.takeMapScreenshot(in_scale, screenshot_name2, () => {
-            ModEntry.Instance.Monitor.Log($"[AutoFarmScreenshot] Triggered: {screenshot_name2}.png", LogLevel.Info);
-        });
+        Game1.game1.takeMapScreenshot(in_scale, screenshot_name2, () => {});
+        ModEntry.Instance.Monitor.Log($"[AutoFarmScreenshot] Triggered: {screenshot_name2}.png", LogLevel.Info);
         // // public string takeMapScreenshot(float? in_scale, string screenshot_name, Action onDone)
         // // 学习资料：
         // // https://stardewvalleywiki.com/Modding:Modder_Guide/APIs
